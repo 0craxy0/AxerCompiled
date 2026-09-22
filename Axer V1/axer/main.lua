@@ -82,8 +82,10 @@ end)
 -- Game modules (PlaceId-specific file first, fallback universal)
 ----------------------------------------------------------------------
 local function runGameFile(path)
-	local source = readFile(path)
-	if type(source) ~= 'string' then
+	-- Optional: missing per-game files are normal (some executors even raise on
+	-- 404 rather than returning the body); universal.lua is the fallback.
+	local okFetch, source = pcall(readFile, path, true)
+	if not okFetch or type(source) ~= 'string' then
 		return false
 	end
 	local chunk, err = loadstring(source, path)

@@ -80,10 +80,14 @@ if not shared.AxerDeveloper then
 	end
 end
 
-local function downloadFile(path)
+-- optional=true: a missing file (404) returns nil instead of erroring;
+-- network/other failures still raise. Used for per-game module files where
+-- 'no file for this PlaceId' is normal and the universal fallback applies.
+local function downloadFile(path, optional)
 	if shared.AxerDeveloper then
 		local src = readLocal(path)
 		if src then return src end
+		if optional then return nil end
 		error('[Axer] dev mode: missing local file '..path, 0)
 	end
 
@@ -101,6 +105,7 @@ local function downloadFile(path)
 	local url = ('https://raw.githubusercontent.com/%s/%s/%s%s'):format(REPO, BRANCH, prefix, path)
 	local res = httpGet(url)
 	if res == '404: Not Found' or res:find('^404:') then
+		if optional then return nil end
 		error('[Axer] '..path..' not found in '..REPO..'@'..BRANCH, 0)
 	end
 	if HAS_FS then
