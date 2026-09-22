@@ -13,7 +13,7 @@ keyed by PlaceId.
 ## Usage
 
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/<owner>/AxerCompiled/main/NewMainScript.lua", true))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/0craxy0/AxerCompiled/main/Axer%20V1/NewMainScript.lua", true))()
 ```
 
 - **RightShift** toggles the GUI.
@@ -40,7 +40,8 @@ axer/
   profiles/              # commit.txt + per-game config.json
 ```
 
-The GitHub distribution repo mirrors the `axer/` folder (set `REPO` in
+The GitHub distribution repo (`0craxy0/AxerCompiled`) mirrors the `axer/`
+folder inside the `Axer V1/` subfolder (configure via `REPO`/`SUBFOLDER` in
 `NewMainScript.lua`). Any `.lua` file pulled from the repo is stamped with a
 cache watermark so updates can wipe managed files without touching user data.
 
@@ -103,12 +104,15 @@ edits apply on the next execute without pushing commits.
 
 ## Offline tests
 
-`test/boot_test.lua` mocks the Roblox/executor API surface and boots the real
-`axer/main.lua` through the same loadstring pipeline used in-game:
+`test/run_boot_test.py` seeds the real axer sources into a mocked
+Roblox/executor filesystem and boots the actual `axer/main.lua` through the
+same loadstring pipeline used in-game (requires the standalone Luau CLI in
+`.freebuff/tools/`):
 
 ```
-.freebuff/tools/luau.exe test/boot_test.lua
+python test/run_boot_test.py
 ```
 
 It registers the universal modules, toggles them, serializes config, writes it
-through the (mocked) filesystem, decodes it back, restores, and panics.
+through the (mocked) filesystem, decodes it back, restores, and panics — 29
+assertions total.

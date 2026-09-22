@@ -1,8 +1,9 @@
+--!nolint LocalShadow
 --[[
 	Axer V1 — bootstrap entry point.
 
 	This is the only file users need to execute:
-		loadstring(game:HttpGet("https://raw.githubusercontent.com/<you>/AxerCompiled/main/NewMainScript.lua", true))()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/0craxy0/AxerCompiled/main/Axer%20V1/NewMainScript.lua", true))()
 
 	- Mirrors the axer/ folder layout in a GitHub repo (see REPO below).
 	- Caches downloaded files in the executor filesystem; re-downloads only
@@ -12,8 +13,11 @@
 	  straight from the local `axer/` folder next to this script (Studio).
 ]]
 
-local REPO = 'user/AxerCompiled' -- TODO: replace with '<owner>/<repo>'
+local REPO = '0craxy0/AxerCompiled'
 local BRANCH = 'main'
+-- Folder that holds this project inside REPO ('' if it sits at the repo root).
+-- Spaces are URL-encoded automatically ('Axer V1' -> 'Axer%20V1').
+local SUBFOLDER = 'Axer V1'
 local CACHE = 'axer'
 local FOLDERS = { CACHE, CACHE..'/games', CACHE..'/profiles', CACHE..'/assets', CACHE..'/libraries' }
 
@@ -33,7 +37,17 @@ local listfiles = listfiles or function() return {} end
 local delfile = delfile or function() end
 local HAS_FS = type(writefile) == 'function' and type(readfile) == 'function' and type(isfile) == 'function'
 
+-- Cleans paste artifacts that make HTTP layers misparse the URL
+-- (leading/trailing whitespace, accidentally doubled scheme).
+local function normalizeUrl(url)
+	url = url:gsub('^%s+', ''):gsub('%s+$', '')
+	url = url:gsub('^https://https://', 'https://')
+	url = url:gsub('^http://http://', 'http://')
+	return url
+end
+
 local function httpGet(url)
+	url = normalizeUrl(url)
 	if type(game) == 'table' or type(game) == 'userdata' then
 		local ok, res = pcall(function() return game:HttpGet(url, true) end)
 		if ok and res then return res end
@@ -83,7 +97,8 @@ local function downloadFile(path)
 	end
 
 	-- 2. Download and cache (only when we have somewhere to put it).
-	local url = ('https://raw.githubusercontent.com/%s/%s/%s'):format(REPO, BRANCH, path)
+	local prefix = SUBFOLDER ~= '' and (SUBFOLDER:gsub(' ', '%%20'))..'/' or ''
+	local url = ('https://raw.githubusercontent.com/%s/%s/%s%s'):format(REPO, BRANCH, prefix, path)
 	local res = httpGet(url)
 	if res == '404: Not Found' or res:find('^404:') then
 		error('[Axer] '..path..' not found in '..REPO..'@'..BRANCH, 0)
