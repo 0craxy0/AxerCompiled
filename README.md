@@ -13,7 +13,7 @@ keyed by PlaceId.
 ## Usage
 
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/<owner>/AxerCompiled/main/NewMainScript.lua", true))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/0craxy0/AxerCompiled/main/NewMainScript.lua", true))()
 ```
 
 - **RightShift** toggles the GUI.
